@@ -40,21 +40,23 @@ jobs:
       # As Github action event `issue_comment` does not provide the right ref
       # (commit/branch) to be tested, let's use this third part action to work
       # this limitation around.
-      - name: resolve pr refs
-        id: refs
-        uses: kata-containers/resolve-pr-refs@v0.0.3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: get-PR-ref
+        id: get-PR-ref
+        run: |
+            ref=$(cat $GITHUB_EVENT_PATH | jq -r '.issue.pull_request.url' | sed  's#^.*\/pulls#refs\/pull#' | sed 's#$#\/merge#')
+            echo "reference for PR: " ${ref}
+            echo "##[set-output name=pr-ref;]${ref}"
       - uses: actions/checkout@v2
         with:
-          ref: ${{ steps.refs.outputs.base_ref }}
+          ref: ${{ steps.get-PR-ref.outputs.pr-ref }}
       - name: build-and-push-kata-deploy-ci
         id: build-and-push-kata-deploy-ci
         run: |
           tag=$(echo $GITHUB_REF | cut -d/ -f3-)
           pushd $GITHUB_WORKSPACE
           git checkout $tag
-          pkg_sha=$(git rev-parse HEAD)
+          PR_SHA=$(git log --format=format:%H -n1)
+          echo ${PR_SHA}
           popd
           ln -s $GITHUB_WORKSPACE/tools/packaging/kata-deploy/action packaging/kata-deploy/action
           echo "::set-output name=PKG_SHA::${pkg_sha}"
