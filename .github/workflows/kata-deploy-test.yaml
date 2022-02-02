@@ -61,13 +61,3 @@ jobs:
           echo "GITHUB_REF-$GITHUB_REF"
           git log ${PR_SHA} --oneline
           echo "::set-output name=PKG_SHA::${PKG_SHA}"
-      - name: test-kata-deploy-ci-in-aks
-        uses: ./packaging/kata-deploy/action
-        with:
-          packaging-sha: ${{steps.build-and-push-kata-deploy-ci.outputs.PKG_SHA}}
-        env:
-          PKG_SHA: ${{steps.build-and-push-kata-deploy-ci.outputs.PKG_SHA}}
-          AZ_APPID: ${{ secrets.AZ_APPID }}
-          AZ_PASSWORD: ${{ secrets.AZ_PASSWORD }}
-          AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
-          AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
