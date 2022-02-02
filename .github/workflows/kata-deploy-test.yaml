@@ -59,7 +59,7 @@ jobs:
           echo ${PR_SHA}
           popd
           echo "GITHUB_REF-$GITHUB_REF"
-          git show ${PR_SHA}
+          git log ${PR_SHA} --oneline
           echo "::set-output name=PKG_SHA::${PKG_SHA}"
       - name: test-kata-deploy-ci-in-aks
         uses: ./packaging/kata-deploy/action
