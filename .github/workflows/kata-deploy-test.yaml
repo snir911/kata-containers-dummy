@@ -58,8 +58,9 @@ jobs:
           PR_SHA=$(git log --format=format:%H -n1)
           echo ${PR_SHA}
           popd
-          ln -s $GITHUB_WORKSPACE/tools/packaging/kata-deploy/action packaging/kata-deploy/action
-          echo "::set-output name=PKG_SHA::${pkg_sha}"
+          echo "GITHUB_REF-$GITHUB_REF"
+          git show ${PR_SHA}
+          echo "::set-output name=PKG_SHA::${PKG_SHA}"
       - name: test-kata-deploy-ci-in-aks
         uses: ./packaging/kata-deploy/action
         with:
